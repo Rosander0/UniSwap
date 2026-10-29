@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" width="100%" height="100%">
+  <style>
+    .entity { fill: #ffffff; stroke: #1e3a8a; stroke-width: 2; rx: 8; }
+    .header { fill: #1e3a8a; rx: 6; }
+    .header-text { fill: #ffffff; font-family: system-ui, sans-serif; font-size: 14px; font-weight: bold; }
+    .field-text { fill: #0f172a; font-family: ui-monospace, monospace; font-size: 12px; }
+    .pk { font-weight: bold; fill: #0284c7; }
+    .fk { fill: #b45309; }
+    .line { stroke: #64748b; stroke-width: 2; fill: none; }
+    .line-arrow { fill: #64748b; }
+  </style>
+
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 0 L 8 4 L 0 8 z" class="line-arrow" />
+    </marker>
+  </defs>
+
+  <!-- Campus -->
+  <g transform="translate(40, 40)">
+    <rect class="entity" width="220" height="120" />
+    <path class="header" d="M 0 0 h 220 v 32 H 0 z" />
+    <text x="110" y="21" text-anchor="middle" class="header-text">Campus (accounts)</text>
+    <text x="15" y="55" class="field-text pk">PK id (IntegerField)</text>
+    <text x="15" y="75" class="field-text">name (CharField)</text>
+    <text x="15" y="95" class="field-text">email_domain (CharField)</text>
+  </g>
+
+  <!-- User -->
+  <g transform="translate(360, 40)">
+    <rect class="entity" width="240" height="180" />
+    <path class="header" d="M 0 0 h 240 v 32 H 0 z" />
+    <text x="120" y="21" text-anchor="middle" class="header-text">User (AbstractUser)</text>
+    <text x="15" y="55" class="field-text pk">PK id (IntegerField)</text>
+    <text x="15" y="75" class="field-text">username (CharField)</text>
+    <text x="15" y="95" class="field-text">college_email (EmailField, UQ)</text>
+    <text x="15" y="115" class="field-text">is_email_verified (BooleanField)</text>
+    <text x="15" y="135" class="field-text fk">FK campus_id (Campus)</text>
+    <text x="15" y="155" class="field-text">department, year (CharField)</text>
+  </g>
+
+  <!-- Category -->
+  <g transform="translate(700, 40)">
+    <rect class="entity" width="220" height="120" />
+    <path class="header" d="M 0 0 h 220 v 32 H 0 z" />
+    <text x="110" y="21" text-anchor="middle" class="header-text">Category (listings)</text>
+    <text x="15" y="55" class="field-text pk">PK id (IntegerField)</text>
+    <text x="15" y="75" class="field-text">name (CharField)</text>
+    <text x="15" y="95" class="field-text">slug (SlugField, UQ)</text>
+  </g>
+
+  <!-- Listing -->
+  <g transform="translate(360, 270)">
+    <rect class="entity" width="240" height="200" />
+    <path class="header" d="M 0 0 h 240 v 32 H 0 z" />
+    <text x="120" y="21" text-anchor="middle" class="header-text">Listing (listings)</text>
+    <text x="15" y="55" class="field-text pk">PK id (IntegerField)</text>
+    <text x="15" y="75" class="field-text fk">FK seller_id (User)</text>
+    <text x="15" y="95" class="field-text fk">FK campus_id (Campus)</text>
+    <text x="15" y="115" class="field-text fk">FK category_id (Category)</text>
+    <text x="15" y="135" class="field-text">title, description</text>
+    <text x="15" y="155" class="field-text">price (DecimalField 10,2)</text>
+    <text x="15" y="175" class="field-text">condition, status</text>
+  </g>
+
+  <!-- ListingImage -->
+  <g transform="translate(700, 270)">
+    <rect class="entity" width="220" height="110" />
+    <path class="header" d="M 0 0 h 220 v 32 H 0 z" />
+    <text x="110" y="21" text-anchor="middle" class="header-text">ListingImage (listings)</text>
+    <text x="15" y="55" class="field-text pk">PK id (IntegerField)</text>
+    <text x="15" y="75" class="field-text fk">FK listing_id (Listing)</text>
+    <text x="15" y="95" class="field-text">image (ImageField)</text>
+  </g>
+
+  <!-- Conversation & Message -->
+  <g transform="translate(40, 270)">
+    <rect class="entity" width="240" height="160" />
+    <path class="header" d="M 0 0 h 240 v 32 H 0 z" />
+    <text x="120" y="21" text-anchor="middle" class="header-text">Conversation (messaging)</text>
+    <text x="15" y="55" class="field-text pk">PK id (IntegerField)</text>
+    <text x="15" y="75" class="field-text fk">FK listing_id (Listing)</text>
+    <text x="15" y="95" class="field-text fk">FK buyer_id (User)</text>
+    <text x="15" y="115" class="field-text fk">FK seller_id (User)</text>
+    <text x="15" y="135" class="field-text">UQ (listing, buyer)</text>
+  </g>
+
+  <!-- Transaction -->
+  <g transform="translate(200, 500)">
+    <rect class="entity" width="260" height="140" />
+    <path class="header" d="M 0 0 h 260 v 32 H 0 z" />
+    <text x="130" y="21" text-anchor="middle" class="header-text">Transaction (deals)</text>
+    <text x="15" y="55" class="field-text pk">PK id (IntegerField)</text>
+    <text x="15" y="75" class="field-text fk">FK listing, buyer, seller</text>
+    <text x="15" y="95" class="field-text">status: Req|Agr|Comp|Canc</text>
+    <text x="15" y="115" class="field-text">completed_at (DateTimeField)</text>
+  </g>
+
+  <!-- Review -->
+  <g transform="translate(560, 500)">
+    <rect class="entity" width="260" height="140" />
+    <path class="header" d="M 0 0 h 260 v 32 H 0 z" />
+    <text x="130" y="21" text-anchor="middle" class="header-text">Review (reviews)</text>
+    <text x="15" y="55" class="field-text pk">PK id (IntegerField)</text>
+    <text x="15" y="75" class="field-text fk">1-to-1 transaction_id</text>
+    <text x="15" y="95" class="field-text fk">FK reviewer, reviewee</text>
+    <text x="15" y="115" class="field-text">rating (1-5), comment</text>
+  </g>
+
+  <!-- Connectors -->
+  <path d="M 260 100 L 360 100" class="line" marker-end="url(#arrow)" />
+  <path d="M 480 220 L 480 270" class="line" marker-end="url(#arrow)" />
+  <path d="M 700 100 L 600 280" class="line" marker-end="url(#arrow)" />
+  <path d="M 600 320 L 700 320" class="line" marker-end="url(#arrow)" />
+  <path d="M 360 350 L 280 350" class="line" marker-end="url(#arrow)" />
+  <path d="M 430 470 L 350 500" class="line" marker-end="url(#arrow)" />
+  <path d="M 460 560 L 560 560" class="line" marker-end="url(#arrow)" />
+</svg>
+

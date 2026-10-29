@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Verification Failed - UniSwap{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 3rem auto; text-align: center;">
+    <div class="card">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">❌</div>
+        <h2>Verification Link Invalid</h2>
+        <p style="color: var(--text-muted); margin: 1rem 0 1.5rem;">
+            This email verification link is either invalid, tampered with, or expired.
+        </p>
+        <a href="{% url 'accounts:login' %}" class="btn btn-primary">Return to Login</a>
+    </div>
+</div>
+{% endblock %}
+

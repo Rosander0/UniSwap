@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - UniSwap{% endblock %}
+
+{% block content %}
+<div style="max-width: 520px; margin: 0 auto;">
+    <div class="card">
+        <div class="card-header">
+            <h2>Join UniSwap</h2>
+        </div>
+        <p style="color: var(--text-muted); margin-bottom: 1.25rem; font-size: 0.95rem;">
+            Sign up to buy, sell, and exchange textbooks, calculators, lab coats, and electronics with fellow students.
+        </p>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-error">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <ul class="form-errors">
+                        {% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.college_email.id_for_label }}">College Email</label>
+                {{ form.college_email }}
+                <small class="form-text">Must match your campus domain (@campus.edu, @university.edu, etc.)</small>
+                {% if form.college_email.errors %}
+                    <ul class="form-errors">
+                        {% for error in form.college_email.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.department.id_for_label }}">Department / Major</label>
+                {{ form.department }}
+                {% if form.department.errors %}
+                    <ul class="form-errors">
+                        {% for error in form.department.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.year.id_for_label }}">Class Year</label>
+                {{ form.year }}
+                {% if form.year.errors %}
+                    <ul class="form-errors">
+                        {% for error in form.year.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}">Password</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <ul class="form-errors">
+                        {% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password_confirm.id_for_label }}">Confirm Password</label>
+                {{ form.password_confirm }}
+                {% if form.password_confirm.errors %}
+                    <ul class="form-errors">
+                        {% for error in form.password_confirm.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+        </form>
+
+        <p style="margin-top: 1.5rem; text-align: center; font-size: 0.9rem; color: var(--text-muted);">
+            Already have an account? <a href="{% url 'accounts:login' %}">Log in here</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
+

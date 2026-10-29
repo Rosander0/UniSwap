@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniSwap - Course Engineering Report</title>
+    <link rel="stylesheet" href="./style.css">
+    <style>
+        .screenshot-box {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        .screenshot-box img {
+            width: 100%;
+            max-width: 950px;
+            height: auto;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+        .screenshot-caption {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 0.75rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <header class="docs-header">
+        <div class="docs-nav-wrap">
+            <div class="docs-brand">
+                <span>🎓 UniSwap</span>
+                <span class="docs-badge">Course Showcase</span>
+            </div>
+            <nav class="docs-nav">
+                <a href="./index.html">Overview</a>
+                <a href="./report.html" class="active">Course Report</a>
+                <a href="./architecture.html">Architecture &amp; URLs</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="docs-content">
+        <section class="section">
+            <span style="font-size: 0.85rem; color: var(--accent); font-weight: 700; text-transform: uppercase;">Technical Milestone Report</span>
+            <h1 style="font-size: 2.2rem; color: var(--primary); margin: 0.5rem 0 1rem;">UniSwap: Campus-Only Peer-to-Peer Marketplace System</h1>
+            <p style="color: var(--text-muted); font-size: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+                <strong>Author:</strong> UniSwap Development Team &bull; <strong>Framework:</strong> Django 5.x &bull; <strong>Language:</strong> Python 3.12+ &bull; <strong>Deployment Target:</strong> WSGI / PostgreSQL
+            </p>
+
+            <h2>1. Executive Summary</h2>
+            <p>
+                College students routinely spend hundreds of dollars each semester on single-use items such as STEM textbooks, graphing calculators, organic chemistry lab coats, and specialty electronic peripherals. Existing generic classifieds (such as Craigslist or Facebook Marketplace) fail to provide campus-level trust, require sharing personal phone numbers with unknown external entities, and frequently expose students to scams or off-campus meetups.
+            </p>
+            <p>
+                <strong>UniSwap</strong> addresses this need by providing an institutional-walled marketplace. By validating every student against their verified institutional domain, transactions occur in safe, physical campus environments between recognized academic peers. The system is engineered on Django 5.x using clean architectural principles: cryptographic verification tokens, transactional state machines, strict ownership verification, live SQL aggregation for seller trust, and total elimination of Insecure Direct Object Reference (IDOR) vulnerabilities.
+            </p>
+
+            <h2>2. Visual UI Verification &amp; Feature Walkthrough</h2>
+            <p>The following screenshots demonstrate the verified end-to-end functionality of UniSwap running in production:</p>
+
+            <h3>2.1 Student Registration &amp; Domain Detection</h3>
+            <p>Students register using their academic email. The system dynamically resolves and creates the associated campus record.</p>
+            <div class="screenshot-box">
+                <img src="./assets/01_signup.png" alt="Student Registration Portal">
+                <div class="screenshot-caption">Figure 1: Student Registration Form with institutional domain detection.</div>
+            </div>
+
+            <h3>2.2 Campus Marketplace Catalog &amp; Multi-Criteria Search</h3>
+            <p>The marketplace feed displays active items scoped to the user's institution with search across categories, condition, and price bounds.</p>
+            <div class="screenshot-box">
+                <img src="./assets/03_browse_listings.png" alt="Marketplace Feed & Filters">
+                <div class="screenshot-caption">Figure 2: Marketplace catalog featuring multi-attribute search and category filters.</div>
+            </div>
+
+            <h3>2.3 Listing Creation with Image Uploads</h3>
+            <p>Sellers publish items with categorized condition metrics and multi-photo uploads handled via <code>inlineformset_factory</code>.</p>
+            <div class="screenshot-box">
+                <img src="./assets/02_new_listing.png" alt="Listing Creation Form">
+                <div class="screenshot-caption">Figure 3: Listing creation view with condition selection and multi-image formset.</div>
+            </div>
+
+            <h3>2.4 Scoped Peer-to-Peer Messaging</h3>
+            <p>Direct communication happens securely within the platform, eliminating the need to exchange private personal contact info.</p>
+            <div class="screenshot-box">
+                <img src="./assets/04_messaging_buyer.png" alt="Buyer Messaging Interface">
+                <div class="screenshot-caption">Figure 4: Buyer perspective inquiring about listing details.</div>
+            </div>
+            <div class="screenshot-box">
+                <img src="./assets/05_messaging_seller.png" alt="Seller Messaging Interface">
+                <div class="screenshot-caption">Figure 5: Seller perspective replying to buyer coordinate meetup.</div>
+            </div>
+
+            <h3>2.5 Transaction State Machine: Requested to Agreed</h3>
+            <p>Deals transition through explicit states. Once the seller agrees, the item is marked as <code>Reserved</code>.</p>
+            <div class="screenshot-box">
+                <img src="./assets/06_deal_requested.png" alt="Transaction Requested">
+                <div class="screenshot-caption">Figure 6: Deal dashboard with 'Requested' status awaiting seller agreement.</div>
+            </div>
+            <div class="screenshot-box">
+                <img src="./assets/07_deal_agreed.png" alt="Transaction Agreed">
+                <div class="screenshot-caption">Figure 7: Deal status transitioned to 'Agreed', reserving inventory for physical hand-off.</div>
+            </div>
+
+            <h3>2.6 Completed Deal, Reviews &amp; Dynamic Seller Rating</h3>
+            <p>Upon physical exchange, the transaction is marked completed and the buyer leaves a verified 5-star review. The seller's aggregate score calculates live via SQL <code>Avg</code>.</p>
+            <div class="screenshot-box">
+                <img src="./assets/08_review_submitted.png" alt="Review Submission">
+                <div class="screenshot-caption">Figure 8: Verified review submission confirmation for completed deal.</div>
+            </div>
+            <div class="screenshot-box">
+                <img src="./assets/09_seller_profile_rating.png" alt="Seller Profile & Rating">
+                <div class="screenshot-caption">Figure 9: Seller public profile displaying dynamic 5.0/5.0 aggregate rating.</div>
+            </div>
+
+            <h2>3. Security Architecture &amp; IDOR Prevention</h2>
+            <p>
+                Insecure Direct Object Reference (IDOR) is eliminated across UniSwap by pre-filtering querysets to the authenticated user before executing <code>get_object_or_404</code>:
+            </p>
+            <pre><code># IDOR-immune query pattern applied across UniSwap
+user_conversations = Conversation.objects.filter(
+    Q(buyer=request.user) | Q(seller=request.user)
+)
+conversation = get_object_or_404(user_conversations, pk=conv_id)</code></pre>
+            <p>
+                Non-participants attempting to access <code>/messages/99/</code> or <code>/deals/42/agree/</code> receive an HTTP 404 Not Found error.
+            </p>
+
+            <h2>4. Automated Test Suite</h2>
+            <p>The application is validated by <strong>33 unit and integration tests</strong>:</p>
+            <ul>
+                <li>Verification gate blocking unauthorized access across views.</li>
+                <li>Ownership guard preventing non-owners from editing or deleting listings (HTTP 403).</li>
+                <li>Zero-IDOR response verification (HTTP 404) for non-participants.</li>
+                <li>Finite state machine lifecycle transitions (<code>Requested &rarr; Agreed &rarr; Completed</code>).</li>
+                <li>Verified review gates, prevention of self-reviews, and live <code>Avg</code> score calculation.</li>
+                <li>Domain validation and dynamic campus generation.</li>
+            </ul>
+
+            <h2>5. Conclusion</h2>
+            <p>
+                UniSwap demonstrates a robust, student-focused marketplace built with strict data integrity, zero-IDOR safety, and clean software architecture.
+            </p>
+        </section>
+    </main>
+
+    <footer class="docs-footer">
+        <p>&copy; UniSwap Project Showcase &bull; GitHub Pages Static Documentation Site &bull; Built with Django 5.x &amp; Vanilla CSS</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}{{ action }} Listing - UniSwap{% endblock %}
+
+{% block content %}
+<div style="max-width: 680px; margin: 0 auto;">
+    <div class="card">
+        <div class="card-header">
+            <h2>{{ action }} Listing</h2>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-error">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">Item Title</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <ul class="form-errors">
+                        {% for error in form.title.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="{{ form.category.id_for_label }}">Category</label>
+                    {{ form.category }}
+                    {% if form.category.errors %}
+                        <ul class="form-errors">
+                            {% for error in form.category.errors %}<li>{{ error }}</li>{% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.condition.id_for_label }}">Condition</label>
+                    {{ form.condition }}
+                    {% if form.condition.errors %}
+                        <ul class="form-errors">
+                            {% for error in form.condition.errors %}<li>{{ error }}</li>{% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.price.id_for_label }}">Price ($ USD)</label>
+                {{ form.price }}
+                {% if form.price.errors %}
+                    <ul class="form-errors">
+                        {% for error in form.price.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}">Description</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <ul class="form-errors">
+                        {% for error in form.description.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <!-- Image Formset -->
+            <div style="margin: 1.5rem 0; padding: 1.25rem; background: #f8fafc; border-radius: var(--radius); border: 1px solid var(--border);">
+                <h4 style="margin-bottom: 0.75rem;">Listing Photos</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    Upload clear images of your item. In-person buyers verify condition.
+                </p>
+                {{ formset.management_form }}
+                {% for img_form in formset %}
+                    <div style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 1rem;">
+                        {{ img_form.id }}
+                        {{ img_form.image }}
+                        {% if img_form.instance.pk and formset.can_delete %}
+                            <label style="font-size: 0.85rem; color: var(--danger); display: flex; align-items: center; gap: 0.25rem;">
+                                {{ img_form.DELETE }} Delete
+                            </label>
+                        {% endif %}
+                        {% if img_form.errors %}
+                            <span style="color: var(--danger); font-size: 0.85rem;">{{ img_form.errors }}</span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 2;">Save Listing</button>
+                <a href="{% if listing %}{% url 'listings:detail' listing.id %}{% else %}{% url 'listings:list' %}{% endif %}" class="btn btn-secondary" style="flex: 1;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

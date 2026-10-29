@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Campus Marketplace - UniSwap{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <h1 style="font-size: 1.8rem; font-weight: 700;">Campus Marketplace</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">
+            Showing verified student listings for <strong>{{ user.campus.name|default:"All Campuses" }}</strong>
+        </p>
+    </div>
+    <a href="{% url 'listings:create' %}" class="btn btn-primary">+ Post a Listing</a>
+</div>
+
+<!-- Search & Filter Bar -->
+<form method="get" class="filter-bar">
+    <div>
+        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">Search</label>
+        <input type="text" name="q" value="{{ selected_q }}" placeholder="Search title, author, course...">
+    </div>
+    <div>
+        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">Category</label>
+        <select name="category">
+            <option value="">All Categories</option>
+            {% for cat in categories %}
+                <option value="{{ cat.slug }}" {% if selected_category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">Condition</label>
+        <select name="condition">
+            <option value="">Any Condition</option>
+            {% for cond in conditions %}
+                <option value="{{ cond }}" {% if selected_condition == cond %}selected{% endif %}>{{ cond }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">Min $</label>
+        <input type="number" step="0.01" name="min" value="{{ selected_min }}" placeholder="0.00">
+    </div>
+    <div>
+        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">Max $</label>
+        <input type="number" step="0.01" name="max" value="{{ selected_max }}" placeholder="500.00">
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+        <button type="submit" class="btn btn-primary" style="height: 38px;">Filter</button>
+        {% if selected_q or selected_category or selected_condition or selected_min or selected_max %}
+            <a href="{% url 'listings:list' %}" class="btn btn-secondary" style="height: 38px;">Reset</a>
+        {% endif %}
+    </div>
+</form>
+
+<!-- Listings Grid -->
+{% if listings %}
+    <div class="grid-listings">
+        {% for listing in listings %}
+            <div class="listing-card">
+                <a href="{% url 'listings:detail' listing.id %}" class="listing-img-box">
+                    {% if listing.images.first %}
+                        <img src="{{ listing.images.first.image.url }}" alt="{{ listing.title }}">
+                    {% else %}
+                        <span style="color: var(--text-muted); font-size: 0.9rem;">No Image Uploaded</span>
+                    {% endif %}
+                </a>
+                <div class="listing-card-body">
+                    <span class="badge badge-active" style="align-self: flex-start; margin-bottom: 0.4rem;">
+                        {{ listing.category.name }}
+                    </span>
+                    <h3 class="listing-card-title">
+                        <a href="{% url 'listings:detail' listing.id %}">{{ listing.title }}</a>
+                    </h3>
+                    <div class="listing-card-price">${{ listing.price }}</div>
+                    <div class="listing-meta">
+                        <span>{{ listing.condition }}</span>
+                        <span><a href="{% url 'user_profile' listing.seller_id %}">@{{ listing.seller.username }}</a></span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card" style="text-align: center; padding: 3rem 1.5rem;">
+        <h3>No matching listings found</h3>
+        <p style="color: var(--text-muted); margin: 0.5rem 0 1.5rem;">Try adjusting your filters or be the first to sell this item on your campus!</p>
+        <a href="{% url 'listings:create' %}" class="btn btn-primary">+ Post a Listing</a>
+    </div>
+{% endif %}
+{% endblock %}
+

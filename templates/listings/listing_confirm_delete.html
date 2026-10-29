@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Listing - UniSwap{% endblock %}
+
+{% block content %}
+<div style="max-width: 480px; margin: 2rem auto;">
+    <div class="card" style="text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+        <h2 style="margin-bottom: 0.75rem;">Remove Listing?</h2>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+            Are you sure you want to remove <strong>"{{ listing.title }}"</strong>?
+            This will mark the listing as Removed and take it off the campus marketplace.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-danger" style="flex: 1;">Yes, Remove Listing</button>
+                <a href="{% url 'listings:detail' listing.id %}" class="btn btn-secondary" style="flex: 1;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

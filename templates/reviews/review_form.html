@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Review Deal - UniSwap{% endblock %}
+
+{% block content %}
+<div style="max-width: 580px; margin: 0 auto;">
+    <div class="card">
+        <div class="card-header">
+            <h2>Leave a Verified Campus Review</h2>
+        </div>
+
+        <div style="background: var(--primary-light); padding: 1rem; border-radius: var(--radius); margin-bottom: 1.5rem; font-size: 0.95rem;">
+            <div><strong>Item:</strong> {{ deal.listing.title }} (${{ deal.listing.price }})</div>
+            <div><strong>Reviewing Student:</strong> @{{ reviewee.username }} ({{ reviewee.campus.name }})</div>
+        </div>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-error">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="{{ form.rating.id_for_label }}">Rating</label>
+                {{ form.rating }}
+                {% if form.rating.errors %}
+                    <ul class="form-errors">
+                        {% for error in form.rating.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.comment.id_for_label }}">Your Feedback</label>
+                {{ form.comment }}
+                <small class="form-text">Share your campus meetup experience to help build trust in our community.</small>
+                {% if form.comment.errors %}
+                    <ul class="form-errors">
+                        {% for error in form.comment.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 2;">Submit Review</button>
+                <a href="{% url 'transactions:list' %}" class="btn btn-secondary" style="flex: 1;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

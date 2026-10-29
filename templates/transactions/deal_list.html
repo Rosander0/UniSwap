@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}My Campus Deals - UniSwap{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+    <div class="card">
+        <div class="card-header">
+            <h2>Campus Transactions &amp; Deals</h2>
+        </div>
+
+        {% if deals %}
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                {% for deal in deals %}
+                    <div style="border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; background: #fff; display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                            <div>
+                                <span style="font-size: 1.15rem; font-weight: 700;">
+                                    <a href="{% url 'listings:detail' deal.listing.id %}">{{ deal.listing.title }}</a>
+                                </span>
+                                <span style="color: var(--primary); font-weight: 600; margin-left: 0.5rem;">${{ deal.listing.price }}</span>
+                            </div>
+                            <div>
+                                {% if deal.status == 'Requested' %}
+                                    <span class="badge" style="background: #fef3c7; color: #92400e;">Requested</span>
+                                {% elif deal.status == 'Agreed' %}
+                                    <span class="badge" style="background: #e0f2fe; color: #0369a1;">Agreed</span>
+                                {% elif deal.status == 'Completed' %}
+                                    <span class="badge" style="background: #dcfce7; color: #166534;">Completed</span>
+                                {% else %}
+                                    <span class="badge" style="background: #fee2e2; color: #991b1b;">Cancelled</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div style="font-size: 0.9rem; color: var(--text-muted); display: flex; gap: 1.5rem; flex-wrap: wrap;">
+                            <span>Buyer: <a href="{% url 'user_profile' deal.buyer.id %}">@{{ deal.buyer.username }}</a></span>
+                            <span>Seller: <a href="{% url 'user_profile' deal.seller.id %}">@{{ deal.seller.username }}</a></span>
+                            <span>Created: {{ deal.created_at|date:"M d, Y" }}</span>
+                            {% if deal.completed_at %}
+                                <span>Completed: {{ deal.completed_at|date:"M d, Y" }}</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- State machine action buttons -->
+                        <div style="display: flex; gap: 0.75rem; align-items: center; padding-top: 0.5rem; border-top: 1px solid var(--border); flex-wrap: wrap;">
+                            {% if deal.status == 'Requested' and request.user == deal.seller %}
+                                <form method="post" action="{% url 'transactions:agree' deal.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-primary">
+                                        ✓ Agree to Deal
+                                    </button>
+                                </form>
+                            {% elif deal.status == 'Requested' and request.user == deal.buyer %}
+                                <span style="font-size: 0.85rem; color: var(--text-muted);">
+                                    Waiting for seller (@{{ deal.seller.username }}) to accept deal...
+                                </span>
+                            {% endif %}
+
+                            {% if deal.status == 'Agreed' %}
+                                <form method="post" action="{% url 'transactions:complete' deal.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-accent">
+                                        🤝 Mark Deal Completed
+                                    </button>
+                                </form>
+                                <a href="{% url 'messaging:start_conversation' deal.listing.id %}" class="btn btn-sm btn-secondary">
+                                    💬 Chat with {% if request.user == deal.buyer %}Seller{% else %}Buyer{% endif %}
+                                </a>
+                            {% endif %}
+
+                            {% if deal.status == 'Completed' %}
+                                {% if not deal.review %}
+                                    <a href="{% url 'reviews:create_review' deal.id %}" class="btn btn-sm btn-primary">
+                                        ⭐ Leave Verified Review
+                                    </a>
+                                {% else %}
+                                    <span style="font-size: 0.85rem; color: var(--success); font-weight: 500;">
+                                        ✓ Reviewed (⭐ {{ deal.review.rating }}/5)
+                                    </span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 3rem 1rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🤝</div>
+                <h3>No deals yet</h3>
+                <p style="color: var(--text-muted); margin: 0.5rem 0 1rem;">When you request to buy an item or receive an offer on your listing, it appears here.</p>
+                <a href="{% url 'listings:list' %}" class="btn btn-primary">Browse Campus Listings</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}{{ listing.title }} - UniSwap{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1rem;">
+    <a href="{% url 'listings:list' %}" style="color: var(--text-muted);">&larr; Back to all listings</a>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
+    <!-- Listing Images -->
+    <div>
+        <div class="card" style="padding: 1rem; margin-bottom: 1rem;">
+            {% if listing.images.all %}
+                <div style="width: 100%; height: 380px; display: flex; align-items: center; justify-content: center; background: #f8fafc; border-radius: var(--radius); overflow: hidden;">
+                    <img id="main-image" src="{{ listing.images.first.image.url }}" alt="{{ listing.title }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                </div>
+                {% if listing.images.count > 1 %}
+                    <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem; overflow-x: auto;">
+                        {% for img in listing.images.all %}
+                            <img src="{{ img.image.url }}" alt="Thumbnail" onclick="document.getElementById('main-image').src = this.src" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 1px solid var(--border);">
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <div style="width: 100%; height: 320px; display: flex; align-items: center; justify-content: center; background: #f1f5f9; border-radius: var(--radius); color: var(--text-muted);">
+                    No image provided for this item
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Listing Details & Actions -->
+    <div>
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span class="badge badge-campus">{{ listing.campus.name }}</span>
+                {% if listing.status == 'Active' %}
+                    <span class="badge badge-active">Active</span>
+                {% elif listing.status == 'Reserved' %}
+                    <span class="badge badge-reserved">Reserved</span>
+                {% elif listing.status == 'Sold' %}
+                    <span class="badge badge-sold">Sold</span>
+                {% else %}
+                    <span class="badge badge-removed">Removed</span>
+                {% endif %}
+            </div>
+
+            <h1 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; line-height: 1.25;">
+                {{ listing.title }}
+            </h1>
+
+            <div style="font-size: 2rem; font-weight: 800; color: var(--primary); margin-bottom: 1.25rem;">
+                ${{ listing.price }}
+            </div>
+
+            <div style="background: #f8fafc; padding: 1rem; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 1.5rem;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.95rem;">
+                    <div><strong style="color: var(--text-muted);">Category:</strong> {{ listing.category.name }}</div>
+                    <div><strong style="color: var(--text-muted);">Condition:</strong> {{ listing.condition }}</div>
+                    <div><strong style="color: var(--text-muted);">Posted:</strong> {{ listing.created_at|date:"M d, Y" }}</div>
+                    <div>
+                        <strong style="color: var(--text-muted);">Seller:</strong>
+                        <a href="{% url 'user_profile' listing.seller.id %}">@{{ listing.seller.username }}</a>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Description</h3>
+                <p style="white-space: pre-line; color: #334155; line-height: 1.6;">{{ listing.description }}</p>
+            </div>
+
+            <!-- Actions -->
+            <div style="padding-top: 1rem; border-top: 1px solid var(--border);">
+                {% if is_owner %}
+                    <div style="display: flex; gap: 0.75rem;">
+                        <a href="{% url 'listings:edit' listing.id %}" class="btn btn-secondary" style="flex: 1;">Edit Listing</a>
+                        <a href="{% url 'listings:delete' listing.id %}" class="btn btn-danger" style="flex: 1;">Delete Listing</a>
+                    </div>
+                {% else %}
+                    {% if listing.status == 'Active' %}
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <a href="{% url 'messaging:start_conversation' listing.id %}" class="btn btn-primary" style="width: 100%;">
+                                💬 Message Seller (@{{ listing.seller.username }})
+                            </a>
+                            <form method="post" action="{% url 'transactions:request_deal' listing.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-accent" style="width: 100%;">
+                                    🤝 Request Deal / Purchase
+                                </button>
+                            </form>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning" style="margin: 0;">
+                            This listing is currently {{ listing.status|lower }} and unavailable for purchase.
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

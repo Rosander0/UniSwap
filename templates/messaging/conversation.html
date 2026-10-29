@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Chat with @{{ other_party.username }} - UniSwap{% endblock %}
+
+{% block content %}
+<div style="max-width: 760px; margin: 0 auto;">
+    <div style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+        <a href="{% url 'messaging:inbox' %}" style="color: var(--text-muted);">&larr; Back to Messages</a>
+        <a href="{% url 'listings:detail' conversation.listing.id %}" class="btn btn-sm btn-secondary">
+            View Listing: {{ conversation.listing.title|truncatechars:30 }} (${{ conversation.listing.price }})
+        </a>
+    </div>
+
+    <div class="card" style="padding: 0; overflow: hidden;">
+        <!-- Header -->
+        <div style="padding: 1rem 1.25rem; background: var(--primary-light); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <strong style="color: var(--primary); font-size: 1.1rem;">@{{ other_party.username }}</strong>
+                <span style="font-size: 0.85rem; color: var(--text-muted); margin-left: 0.5rem;">
+                    ({{ other_party.department|default:"Campus Student" }})
+                </span>
+            </div>
+            <a href="{% url 'user_profile' other_party.id %}" style="font-size: 0.85rem;">View Profile</a>
+        </div>
+
+        <!-- Chat History -->
+        <div class="chat-container" style="border: none; height: 420px;">
+            <div class="chat-messages" id="chat-box">
+                {% if chat_messages %}
+                    {% for msg in chat_messages %}
+                        <div class="chat-bubble {% if msg.sender == request.user %}sent{% else %}received{% endif %}">
+                            {{ msg.body }}
+                            <span class="chat-timestamp">{{ msg.created_at|date:"M d, H:i" }}</span>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="text-align: center; color: var(--text-muted); margin: auto;">
+                        No messages yet. Send a message to coordinate pickup or negotiate!
+                    </p>
+                {% endif %}
+            </div>
+
+            <!-- Reply Form -->
+            <form method="post" class="chat-form">
+                {% csrf_token %}
+                <input type="text" name="body" required placeholder="Type a message (e.g., 'Can we meet at the campus library?')..." autocomplete="off" style="flex: 1;">
+                <button type="submit" class="btn btn-primary">Send</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const box = document.getElementById('chat-box');
+    if (box) { box.scrollTop = box.scrollHeight; }
+</script>
+{% endblock %}
+

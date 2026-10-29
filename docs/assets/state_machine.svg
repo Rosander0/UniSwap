@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 260" width="100%" height="100%">
+  <style>
+    .state { fill: #ffffff; stroke: #1e3a8a; stroke-width: 2.5; rx: 24; }
+    .state-terminal { fill: #f0fdf4; stroke: #15803d; stroke-width: 2.5; rx: 24; }
+    .title-text { fill: #1e3a8a; font-family: system-ui, sans-serif; font-size: 15px; font-weight: bold; }
+    .sub-text { fill: #64748b; font-family: system-ui, sans-serif; font-size: 11px; }
+    .arrow { stroke: #0284c7; stroke-width: 2.5; fill: none; }
+    .label { fill: #0369a1; font-family: system-ui, sans-serif; font-size: 11px; font-weight: 600; text-anchor: middle; }
+  </style>
+
+  <defs>
+    <marker id="blue-arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 0 L 8 4 L 0 8 z" fill="#0284c7" />
+    </marker>
+    <marker id="green-arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 0 L 8 4 L 0 8 z" fill="#15803d" />
+    </marker>
+  </defs>
+
+  <!-- State 1: Requested -->
+  <g transform="translate(40, 90)">
+    <rect class="state" width="160" height="70" />
+    <text x="80" y="32" text-anchor="middle" class="title-text">Requested</text>
+    <text x="80" y="50" text-anchor="middle" class="sub-text">Buyer creates deal</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <path d="M 200 125 L 300 125" class="arrow" marker-end="url(#blue-arrow)" />
+  <text x="250" y="112" class="label">Seller Agrees</text>
+  <text x="250" y="145" class="sub-text" text-anchor="middle">(POST /agree/)</text>
+
+  <!-- State 2: Agreed -->
+  <g transform="translate(310, 90)">
+    <rect class="state" width="160" height="70" />
+    <text x="80" y="32" text-anchor="middle" class="title-text">Agreed</text>
+    <text x="80" y="50" text-anchor="middle" class="sub-text">Listing Reserved</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <path d="M 470 125 L 570 125" class="arrow" marker-end="url(#blue-arrow)" />
+  <text x="520" y="112" class="label">Buyer or Seller</text>
+  <text x="520" y="145" class="sub-text" text-anchor="middle">(POST /complete/)</text>
+
+  <!-- State 3: Completed -->
+  <g transform="translate(580, 90)">
+    <rect class="state-terminal" width="160" height="70" />
+    <text x="80" y="32" text-anchor="middle" class="title-text" fill="#15803d">Completed</text>
+    <text x="80" y="50" text-anchor="middle" class="sub-text">Listing Marked Sold</text>
+  </g>
+
+  <!-- Review Gate Step -->
+  <path d="M 660 90 L 660 50 L 780 50" stroke="#15803d" stroke-width="2" fill="none" marker-end="url(#green-arrow)" />
+  <g transform="translate(740, 25)">
+    <rect fill="#fefce8" stroke="#ca8a04" stroke-width="1.5" rx="8" width="120" height="50" />
+    <text x="60" y="24" text-anchor="middle" font-family="system-ui" font-size="12px" font-weight="bold" fill="#854d0e">Review Gate</text>
+    <text x="60" y="40" text-anchor="middle" font-family="system-ui" font-size="10px" fill="#a16207">1 review / party</text>
+  </g>
+</svg>
+

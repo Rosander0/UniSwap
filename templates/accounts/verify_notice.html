@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Email Verification Required - UniSwap{% endblock %}
+
+{% block content %}
+<div style="max-width: 580px; margin: 2rem auto;">
+    <div class="card" style="text-align: center; padding: 2.5rem 2rem;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">📬</div>
+        <h2 style="margin-bottom: 0.75rem;">Verify Your College Email</h2>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6;">
+            UniSwap is exclusive to college students. To protect our community and browse or list campus goods,
+            please check your inbox at <strong>{{ user.college_email }}</strong> and click the verification link we sent.
+        </p>
+
+        <div style="background: var(--primary-light); padding: 1rem; border-radius: var(--radius); margin-bottom: 1.5rem; font-size: 0.9rem; text-align: left;">
+            <strong>Why is this required?</strong>
+            <ul style="margin: 0.5rem 0 0 1.25rem;">
+                <li>Ensures all buyers and sellers belong to the verified campus domain.</li>
+                <li>Prevents spam and off-campus scammers.</li>
+                <li>Unlocks marketplace browsing, messaging, and listings.</li>
+            </ul>
+        </div>
+
+        <form method="post" action="{% url 'accounts:resend_verification' %}" style="display: inline-block;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Resend Verification Email</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

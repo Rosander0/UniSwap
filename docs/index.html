@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniSwap - Campus Marketplace Showcase</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <header class="docs-header">
+        <div class="docs-nav-wrap">
+            <div class="docs-brand">
+                <span>🎓 UniSwap</span>
+                <span class="docs-badge">Course Showcase</span>
+            </div>
+            <nav class="docs-nav">
+                <a href="./index.html" class="active">Overview</a>
+                <a href="./report.html">Course Report</a>
+                <a href="./architecture.html">Architecture &amp; URLs</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="docs-content">
+        <section class="hero">
+            <h1>UniSwap Campus Marketplace</h1>
+            <p>
+                A secure, campus-exclusive peer-to-peer exchange platform for college students to trade used textbooks, graphing calculators, lab coats, and electronics with institutional email verification.
+            </p>
+            <div class="hero-btns">
+                <a href="./report.html" class="btn btn-primary">Read Course Report</a>
+                <a href="./architecture.html" class="btn btn-outline">Architecture &amp; Permissions</a>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Core Features &amp; Design Highlights</h2>
+            <div class="grid-3">
+                <div class="feature-box">
+                    <h4>🔒 Campus Domain Gate</h4>
+                    <p>Signup is strictly restricted to valid institutional domains stored in the dynamic <code>Campus</code> model. Cryptographically signed email tokens gate browsing, listings, and chats.</p>
+                </div>
+                <div class="feature-box">
+                    <h4>📚 Multi-Category Listings</h4>
+                    <p>Browse and search items with multi-criteria filters: condition, category, price range, and full-text keyword search, coupled with multi-image formset uploads.</p>
+                </div>
+                <div class="feature-box">
+                    <h4>💬 Peer-to-Peer Messaging</h4>
+                    <p>Direct campus coordination system with built-in anti-self-messaging rules and comprehensive participant IDOR protection preventing snooping.</p>
+                </div>
+                <div class="feature-box">
+                    <h4>🤝 Enforced Deal Lifecycle</h4>
+                    <p>A deterministic transaction state machine: <code>Requested &rarr; Agreed &rarr; Completed</code>. Only the seller can agree, and completion automatically marks items as Sold.</p>
+                </div>
+                <div class="feature-box">
+                    <h4>⭐ Verified Seller Reviews</h4>
+                    <p>Only parties of a Completed transaction can leave a review. Seller ratings are computed live using database <code>Avg</code> aggregates to guarantee mathematical integrity without denormalization.</p>
+                </div>
+                <div class="feature-box">
+                    <h4>🛡️ Zero-IDOR Architecture</h4>
+                    <p>Every view fetching conversations, transactions, or reviews filters by the active participant before running <code>get_object_or_404</code>, completely eliminating IDOR vulnerabilities.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Quick Local Setup</h2>
+            <pre><code># 1. Clone the repository
+git clone https://github.com/&lt;username&gt;/&lt;repo-name&gt;.git
+cd uniswap
+
+# 2. Create and activate a virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# 3. Install pinned dependencies
+pip install -r requirements.txt
+
+# 4. Configure local environment variables
+cp .env.example .env
+
+# 5. Apply database migrations
+python manage.py migrate
+
+# 6. Seed categories, campus, and sample listings
+python manage.py seed_data
+
+# 7. Run the test suite
+python manage.py test
+
+# 8. Start the development server
+python manage.py runserver</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>Project Documentation</h2>
+            <p style="margin-bottom: 1rem;">Explore the technical specifications and detailed course report:</p>
+            <ul>
+                <li style="margin-bottom: 0.5rem;"><a href="./report.html"><strong>Project Technical Report:</strong></a> Full architectural decisions, security boundaries, state machine derivations, and evaluation metrics.</li>
+                <li><a href="./architecture.html"><strong>Architecture &amp; URL Matrix:</strong></a> Entity-Relationship diagram, transaction state machine flow, complete route table, and access control matrix.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer class="docs-footer">
+        <p>&copy; UniSwap Project Showcase &bull; GitHub Pages Static Documentation Site &bull; Built with Django 5.x &amp; Vanilla CSS</p>
+    </footer>
+</body>
+</html>
+

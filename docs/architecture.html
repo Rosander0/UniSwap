@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniSwap - System Architecture &amp; Technical Specifications</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <header class="docs-header">
+        <div class="docs-nav-wrap">
+            <div class="docs-brand">
+                <span>🎓 UniSwap</span>
+                <span class="docs-badge">Course Showcase</span>
+            </div>
+            <nav class="docs-nav">
+                <a href="./index.html">Overview</a>
+                <a href="./report.html">Course Report</a>
+                <a href="./architecture.html" class="active">Architecture &amp; URLs</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="docs-content">
+        <!-- Apps Architecture -->
+        <section class="section">
+            <h2>1. Application Modules &amp; Responsibilities</h2>
+            <div class="grid-3">
+                <div class="feature-box">
+                    <h4><code>accounts</code></h4>
+                    <p><strong>Models:</strong> Campus, User (AbstractUser)<br>
+                    <strong>Purpose:</strong> Authentication, institutional email validation, token generation, user profiles, and <code>VerifiedRequiredMixin</code>.</p>
+                </div>
+                <div class="feature-box">
+                    <h4><code>listings</code></h4>
+                    <p><strong>Models:</strong> Category, Listing, ListingImage<br>
+                    <strong>Purpose:</strong> Marketplace catalog, condition categorization, multi-image upload formsets, search and price filtering.</p>
+                </div>
+                <div class="feature-box">
+                    <h4><code>messaging</code></h4>
+                    <p><strong>Models:</strong> Conversation, Message<br>
+                    <strong>Purpose:</strong> Peer-to-peer campus communication, unique buyer-listing chats, and anti-self-messaging safeguards.</p>
+                </div>
+                <div class="feature-box">
+                    <h4><code>transactions</code></h4>
+                    <p><strong>Models:</strong> Transaction<br>
+                    <strong>Purpose:</strong> Enforces the deal state machine (Requested &rarr; Agreed &rarr; Completed), inventory status syncing, and hand-off verification.</p>
+                </div>
+                <div class="feature-box">
+                    <h4><code>reviews</code></h4>
+                    <p><strong>Models:</strong> Review<br>
+                    <strong>Purpose:</strong> Verified 1-to-5 star ratings, check constraints preventing self-review, and live non-denormalized rating calculation.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Entity-Relationship Diagram -->
+        <section class="section">
+            <h2>2. Relational Entity-Relationship (ER) Diagram</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                The relational schema enforces referral integrity, indexing on <code>(campus, status, category)</code>, and unique constraints.
+            </p>
+            <div class="diagram-container">
+                <img src="./assets/er_diagram.svg" alt="UniSwap Entity-Relationship Diagram" style="width: 100%; max-width: 900px; height: auto;">
+            </div>
+        </section>
+
+        <!-- Transaction State Machine Flow -->
+        <section class="section">
+            <h2>3. Transaction Lifecycle State Machine</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                Transitions are deterministic and validated at both model and controller levels.
+            </p>
+            <div class="diagram-container">
+                <img src="./assets/state_machine.svg" alt="UniSwap Transaction State Machine" style="width: 100%; max-width: 800px; height: auto;">
+            </div>
+        </section>
+
+        <!-- URL Routing Table -->
+        <section class="section">
+            <h2>4. Complete URL Routing Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>URL Pattern</th>
+                        <th>View Handler</th>
+                        <th>HTTP Methods</th>
+                        <th>Required Access Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>/accounts/signup/</code></td>
+                        <td>SignUpView</td>
+                        <td>GET, POST</td>
+                        <td>Public / Anonymous</td>
+                    </tr>
+                    <tr>
+                        <td><code>/accounts/verify/&lt;token&gt;/</code></td>
+                        <td>VerifyEmailView</td>
+                        <td>GET</td>
+                        <td>Public (Signed Token Required)</td>
+                    </tr>
+                    <tr>
+                        <td><code>/accounts/login/</code></td>
+                        <td>LoginView</td>
+                        <td>GET, POST</td>
+                        <td>Public / Anonymous</td>
+                    </tr>
+                    <tr>
+                        <td><code>/accounts/logout/</code></td>
+                        <td>LogoutView</td>
+                        <td>POST</td>
+                        <td>Authenticated</td>
+                    </tr>
+                    <tr>
+                        <td><code>/accounts/verify-notice/</code></td>
+                        <td>VerifyNoticeView</td>
+                        <td>GET</td>
+                        <td>Authenticated</td>
+                    </tr>
+                    <tr>
+                        <td><code>/listings/</code></td>
+                        <td>ListingListView</td>
+                        <td>GET</td>
+                        <td>Verified Student</td>
+                    </tr>
+                    <tr>
+                        <td><code>/listings/new/</code></td>
+                        <td>ListingCreateView</td>
+                        <td>GET, POST</td>
+                        <td>Verified Student</td>
+                    </tr>
+                    <tr>
+                        <td><code>/listings/&lt;id&gt;/</code></td>
+                        <td>ListingDetailView</td>
+                        <td>GET</td>
+                        <td>Verified Student</td>
+                    </tr>
+                    <tr>
+                        <td><code>/listings/&lt;id&gt;/edit/</code></td>
+                        <td>ListingUpdateView</td>
+                        <td>GET, POST</td>
+                        <td>Verified Listing Owner</td>
+                    </tr>
+                    <tr>
+                        <td><code>/listings/&lt;id&gt;/delete/</code></td>
+                        <td>ListingDeleteView</td>
+                        <td>GET, POST</td>
+                        <td>Verified Listing Owner</td>
+                    </tr>
+                    <tr>
+                        <td><code>/messages/</code></td>
+                        <td>InboxView</td>
+                        <td>GET</td>
+                        <td>Verified Student</td>
+                    </tr>
+                    <tr>
+                        <td><code>/messages/start/&lt;listing_id&gt;/</code></td>
+                        <td>StartConversationView</td>
+                        <td>GET</td>
+                        <td>Verified Non-Owner Student</td>
+                    </tr>
+                    <tr>
+                        <td><code>/messages/&lt;conv_id&gt;/</code></td>
+                        <td>ConversationDetailView</td>
+                        <td>GET, POST</td>
+                        <td>Verified Conversation Participant</td>
+                    </tr>
+                    <tr>
+                        <td><code>/deals/</code></td>
+                        <td>TransactionListView</td>
+                        <td>GET</td>
+                        <td>Verified Student</td>
+                    </tr>
+                    <tr>
+                        <td><code>/deals/request/&lt;listing_id&gt;/</code></td>
+                        <td>RequestDealView</td>
+                        <td>POST</td>
+                        <td>Verified Buyer (Non-Owner)</td>
+                    </tr>
+                    <tr>
+                        <td><code>/deals/&lt;id&gt;/agree/</code></td>
+                        <td>AgreeDealView</td>
+                        <td>POST</td>
+                        <td>Verified Seller</td>
+                    </tr>
+                    <tr>
+                        <td><code>/deals/&lt;id&gt;/complete/</code></td>
+                        <td>CompleteDealView</td>
+                        <td>POST</td>
+                        <td>Verified Buyer or Seller</td>
+                    </tr>
+                    <tr>
+                        <td><code>/reviews/deal/&lt;id&gt;/</code></td>
+                        <td>CreateReviewView</td>
+                        <td>GET, POST</td>
+                        <td>Verified Completed Deal Party</td>
+                    </tr>
+                    <tr>
+                        <td><code>/users/&lt;id&gt;/</code></td>
+                        <td>ProfileDetailView</td>
+                        <td>GET</td>
+                        <td>Verified Student</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Security & Permission Matrix -->
+        <section class="section">
+            <h2>5. Access Control &amp; Permission Matrix</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Resource Action</th>
+                        <th>Anonymous User</th>
+                        <th>Unverified Student</th>
+                        <th>Verified Student</th>
+                        <th>Listing Owner</th>
+                        <th>Deal Participant</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sign up / Log in</td>
+                        <td>✅ Allowed</td>
+                        <td>✅ Allowed</td>
+                        <td>✅ Allowed</td>
+                        <td>✅ Allowed</td>
+                        <td>✅ Allowed</td>
+                    </tr>
+                    <tr>
+                        <td>Browse &amp; Search Listings</td>
+                        <td>❌ Redirect Login</td>
+                        <td>❌ Redirect Verify</td>
+                        <td>✅ Allowed</td>
+                        <td>✅ Allowed</td>
+                        <td>✅ Allowed</td>
+                    </tr>
+                    <tr>
+                        <td>View Listing Detail</td>
+                        <td>❌ Redirect Login</td>
+                        <td>❌ Redirect Verify</td>
+                        <td>✅ Allowed</td>
+                        <td>✅ Allowed</td>
+                        <td>✅ Allowed</td>
+                    </tr>
+                    <tr>
+                        <td>Create New Listing</td>
+                        <td>❌ Redirect Login</td>
+                        <td>❌ Redirect Verify</td>
+                        <td>✅ Allowed</td>
+                        <td>✅ Allowed</td>
+                        <td>✅ Allowed</td>
+                    </tr>
+                    <tr>
+                        <td>Edit / Delete Listing</td>
+                        <td>❌ Redirect Login</td>
+                        <td>❌ Redirect Verify</td>
+                        <td>❌ 403 Forbidden</td>
+                        <td>✅ Allowed</td>
+                        <td>❌ 403 Forbidden</td>
+                    </tr>
+                    <tr>
+                        <td>Message Listing Seller</td>
+                        <td>❌ Redirect Login</td>
+                        <td>❌ Redirect Verify</td>
+                        <td>✅ Allowed</td>
+                        <td>❌ Blocked (Self)</td>
+                        <td>✅ Allowed</td>
+                    </tr>
+                    <tr>
+                        <td>View Chat Thread</td>
+                        <td>❌ Redirect Login</td>
+                        <td>❌ Redirect Verify</td>
+                        <td>❌ 404 IDOR Gate</td>
+                        <td>Participant Only</td>
+                        <td>✅ Allowed</td>
+                    </tr>
+                    <tr>
+                        <td>Agree to Deal</td>
+                        <td>❌ Redirect Login</td>
+                        <td>❌ Redirect Verify</td>
+                        <td>❌ 404 IDOR Gate</td>
+                        <td>✅ Allowed (Seller)</td>
+                        <td>❌ 400 Bad Request</td>
+                    </tr>
+                    <tr>
+                        <td>Complete Deal</td>
+                        <td>❌ Redirect Login</td>
+                        <td>❌ Redirect Verify</td>
+                        <td>❌ 404 IDOR Gate</td>
+                        <td>✅ Allowed</td>
+                        <td>✅ Allowed</td>
+                    </tr>
+                    <tr>
+                        <td>Submit Post-Deal Review</td>
+                        <td>❌ Redirect Login</td>
+                        <td>❌ Redirect Verify</td>
+                        <td>❌ 404 IDOR Gate</td>
+                        <td>✅ If Deal Completed</td>
+                        <td>✅ If Deal Completed</td>
+                    </tr>
+                    <tr>
+                        <td>Inspect Student Profile</td>
+                        <td>❌ Redirect Login</td>
+                        <td>❌ Redirect Verify</td>
+                        <td>✅ Allowed</td>
+                        <td>✅ Allowed</td>
+                        <td>✅ Allowed</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer class="docs-footer">
+        <p>&copy; UniSwap Project Showcase &bull; GitHub Pages Static Documentation Site &bull; Built with Django 5.x &amp; Vanilla CSS</p>
+    </footer>
+</body>
+</html>
+

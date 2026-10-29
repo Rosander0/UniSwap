@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Messages Inbox - UniSwap{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="card">
+        <div class="card-header">
+            <h2>Campus Messages</h2>
+        </div>
+
+        {% if conversations %}
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                {% for conv in conversations %}
+                    <a href="{% url 'messaging:detail' conv.id %}" style="display: block; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius); text-decoration: none; color: inherit; transition: background 0.15s; background: #fff;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                            <strong>
+                                {% if request.user == conv.buyer %}
+                                    Seller: @{{ conv.seller.username }}
+                                {% else %}
+                                    Buyer: @{{ conv.buyer.username }}
+                                {% endif %}
+                            </strong>
+                            <span class="badge badge-campus">{{ conv.listing.title }}</span>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.25rem;">
+                            {% if conv.messages.last %}
+                                {{ conv.messages.last.sender.username }}: {{ conv.messages.last.body|truncatechars:70 }}
+                            {% else %}
+                                <em>No messages yet. Start the conversation!</em>
+                            {% endif %}
+                        </p>
+                        <small style="color: var(--text-muted);">
+                            Last activity: {{ conv.messages.last.created_at|default:conv.created_at|date:"M d, H:i" }}
+                        </small>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 2.5rem 1rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">💬</div>
+                <h3>No conversations yet</h3>
+                <p style="color: var(--text-muted); margin: 0.5rem 0 1rem;">When you inquire about a textbook, calculator, or lab coat, your chat will show up here.</p>
+                <a href="{% url 'listings:list' %}" class="btn btn-primary">Browse Listings</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
